@@ -1,12 +1,31 @@
 {
   "name": "auth",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/main.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/main.js",
+    "dev": "nodemon src/main.ts",
+    "build": "tsc",
+    "lint": "eslint src/**/*.ts",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.5",
+    "eslint": "^9.21.0",
+    "globals": "^16.0.0",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.25.0"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "winston": "^3.17.0"
+  }
 }
