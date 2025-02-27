@@ -1,5 +1,5 @@
 {
-  "name": "auth",
+  "name": "auth-service",
   "version": "1.0.0",
   "main": "src/main.ts",
   "scripts": {
@@ -10,9 +10,9 @@
     "test": "jest"
   },
   "keywords": [],
-  "author": "",
+  "author": "intheloop",
   "license": "ISC",
-  "description": "",
+  "description": "authentication and authorization",
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@types/express": "^5.0.0",
