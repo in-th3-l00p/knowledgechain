@@ -1,40 +1,22 @@
 version: '3.9'
 
 services:
-  auth-db:
+  postgres:
     image: postgres:latest
-    container_name: auth-db-dev
+    container_name: postgres-dev
     environment:
-      - POSTGRES_USER=${AUTH_DB_USER}
-      - POSTGRES_PASSWORD=${AUTH_DB_PASSWORD}
-      - POSTGRES_DB=${AUTH_DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_MULTIPLE_DATABASES=${AUTH_DB_NAME},${USER_DB_NAME}
     volumes:
-      - auth-db-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
     ports:
       - "${AUTH_DB_PORT:-5432}:5432"
     networks:
       - backend-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${AUTH_DB_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  user-db:
-    image: postgres:latest
-    container_name: user-db-dev
-    environment:
-      - POSTGRES_USER=${USER_DB_USER}
-      - POSTGRES_PASSWORD=${USER_DB_PASSWORD}
-      - POSTGRES_DB=${USER_DB_NAME}
-    volumes:
-      - user-db-data:/var/lib/postgresql/data
-    ports:
-      - "${USER_DB_PORT:-5433}:5432"
-    networks:
-      - backend-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${USER_DB_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -46,18 +28,14 @@ services:
     container_name: auth-service-dev
     environment:
       - NODE_ENV=development
-      - DB_HOST=auth-db
-      - DB_PORT=5432
-      - DB_USER=${AUTH_DB_USER}
-      - DB_PASSWORD=${AUTH_DB_PASSWORD}
-      - DB_NAME=${AUTH_DB_NAME}
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${AUTH_DB_NAME}?schema=public
     volumes:
       - ./rest/auth-service:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - "${AUTH_SERVICE_PORT:-3000}:3000"
     depends_on:
-      auth-db:
+      postgres:
         condition: service_healthy
     networks:
       - backend-network
@@ -69,25 +47,20 @@ services:
     container_name: user-service-dev
     environment:
       - NODE_ENV=development
-      - DB_HOST=user-db
-      - DB_PORT=5432
-      - DB_USER=${USER_DB_USER}
-      - DB_PASSWORD=${USER_DB_PASSWORD}
-      - DB_NAME=${USER_DB_NAME}
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${USER_DB_NAME}?schema=public
     volumes:
       - ./rest/user-service:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - "${USER_SERVICE_PORT:-3001}:3000"
     depends_on:
-      user-db:
+      postgres:
         condition: service_healthy
     networks:
       - backend-network
 
 volumes:
-  auth-db-data:
-  user-db-data:
+  postgres-data:
 
 networks:
   backend-network:
