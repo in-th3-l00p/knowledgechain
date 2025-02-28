@@ -1,12 +1,11 @@
 import { Router, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { authenticateToken, checkPermission, AuthRequest } from '../middleware/auth.middleware';
+import { authenticateToken, AuthRequest } from '../middleware/auth.middleware';
 import logger from '../utils/logger';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-// Get user profile
 router.get(
   '/profile', 
   authenticateToken, 
@@ -55,58 +54,4 @@ router.get(
     }
   });
 
-// Update user profile
-router.put(
-  '/profile', 
-  authenticateToken, 
-  async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-      const { firstName, lastName } = req.body;
-
-      const updatedUser = await prisma.user.update({
-        where: { id: req.user!.id },
-        data: {
-          firstName,
-          lastName,
-        },
-      });
-
-      logger.info(`Profile updated for user: ${updatedUser.email}`);
-      res.json({
-        message: 'Profile updated successfully',
-        user: {
-          firstName: updatedUser.firstName,
-          lastName: updatedUser.lastName,
-        },
-      });
-    } catch (error) {
-      logger.error('Error updating profile:', error);
-      res.status(500).json({ message: 'Error updating profile' });
-    }
-  });
-
-// Admin routes
-router.get(
-  '/users', 
-  authenticateToken, 
-  checkPermission('VIEW_USERS'), 
-  async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-      const users = await prisma.user.findMany({
-        include: {
-          roles: {
-            include: {
-              role: true,
-            },
-          },
-        },
-      });
-
-      res.json(users);
-    } catch (error) {
-      logger.error('Error fetching users:', error);
-      res.status(500).json({ message: 'Error fetching users' });
-    }
-  });
-
-export default router; 
+export default router;

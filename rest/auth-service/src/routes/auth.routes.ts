@@ -137,7 +137,6 @@ router.post('/refresh-token', async (req, res) => {
   }
 });
 
-// Logout route
 router.post(
   '/logout',
   authenticateToken,

@@ -6,8 +6,7 @@ import logger from '../utils/logger';
 const router = Router();
 const prisma = new PrismaClient();
 
-// Get all roles
-router.get('/', 
+router.get('/',
   authenticateToken, 
   checkPermission('VIEW_ROLES'), 
   async (req, res) => {
@@ -29,7 +28,6 @@ router.get('/',
     }
 });
 
-// Create new role
 router.post('/',
   authenticateToken,
   checkPermission('MANAGE_ROLES'),

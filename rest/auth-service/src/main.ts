@@ -20,10 +20,10 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/roles', roleRoutes);
+app.use('/api/auth/users', userRoutes);
+app.use('/api/auth/roles', roleRoutes);
 
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response) => {
   logger.error('Unhandled error:', err);
   res.status(500).json({ message: 'Internal server error' });
 });
