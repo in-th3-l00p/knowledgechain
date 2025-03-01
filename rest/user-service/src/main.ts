@@ -2,6 +2,7 @@ import express from 'express';
 import logger from './utils/logger';
 import dotenv from 'dotenv';
 import userRoutes from './routes/users';
+import { initializeKafka } from './utils/kafka';
 
 dotenv.config();
 
@@ -17,6 +18,18 @@ app.use((req, res) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    logger.info(`User service is running on port ${port}`);
-});
+
+const startApplication = async () => {
+    try {
+        await initializeKafka();
+        
+        app.listen(port, () => {
+            logger.info(`User service is running on port ${port}`);
+        });
+    } catch (error) {
+        logger.error('Failed to start application:', error);
+        process.exit(1);
+    }
+};
+
+startApplication();
