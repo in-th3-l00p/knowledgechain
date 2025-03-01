@@ -2,9 +2,51 @@ import request from 'supertest';
 import app from '../../src/main';
 import jwt from 'jsonwebtoken';
 import { config } from '../../src/config';
-import prisma from "../../src/utils/prisma";
+import prisma from "../../src/config/prisma";
+import {Response, NextFunction} from "express";
+import {AuthRequest} from "../../src/types/authRequest";
 
-describe('Role Routes', () => {
+jest.mock('../../src/config/logger', () => ({
+  info: jest.fn(),
+}));
+
+const loginData = {
+  email: 'admin@example.com',
+  password: 'Password123!',
+};
+const mockUser = {
+  id: 'admin1',
+  email: loginData.email,
+  password: 'hashedPassword',
+  isActive: true,
+  roles: [
+    { id: '1', name: 'ADMIN', description: 'Administrator' },
+    { id: '2', name: 'USER', description: 'Regular User' },
+  ],
+};
+
+jest.mock("../../src/middleware/auth.middleware", () => {
+  return {
+    authenticateToken: (req: AuthRequest, res: Response, next: NextFunction) => {
+      const authHeader = req.headers.authorization;
+      const token = authHeader && authHeader.split(' ')[1];
+
+      if (!token) {
+        res.status(401).json({ message: 'Access token is required' });
+        return;
+      }
+
+      req.user = {
+        id: mockUser.id,
+        email: mockUser.email,
+        roles: mockUser.roles.map(ur => ur.name),
+      };
+      next();
+    }
+  }
+});
+
+describe('role routes', () => {
   let adminToken: string;
 
   beforeEach(() => {
@@ -18,12 +60,11 @@ describe('Role Routes', () => {
 
   describe('GET /api/auth/roles', () => {
     it('should return list of roles when authenticated', async () => {
-      const mockRoles = [
-        { id: '1', name: 'ADMIN', description: 'Administrator' },
-        { id: '2', name: 'USER', description: 'Regular User' },
-      ];
-
-      (prisma.role.findMany as jest.Mock).mockResolvedValue(mockRoles);
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (prisma.role.findMany as jest.Mock).mockResolvedValue(mockUser.roles);
+      (prisma.permission.findMany as jest.Mock).mockResolvedValue([
+        { name: "VIEW_ROLES" }
+      ])
 
       const response = await request(app)
         .get('/api/auth/roles')
@@ -54,6 +95,9 @@ describe('Role Routes', () => {
       };
 
       (prisma.role.findUnique as jest.Mock).mockResolvedValue(mockRole);
+      (prisma.permission.findMany as jest.Mock).mockResolvedValue([
+        { name: "VIEW_ROLES" }
+      ])
 
       const response = await request(app)
         .get('/api/auth/roles/1')

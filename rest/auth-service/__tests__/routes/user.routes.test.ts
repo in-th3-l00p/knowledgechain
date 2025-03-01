@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../../src/main';
 import jwt from 'jsonwebtoken';
 import { config } from '../../src/config';
-import prisma from "../../src/utils/prisma";
+import prisma from "../../src/config/prisma";
 
 describe('User Routes', () => {
   let authToken: string;

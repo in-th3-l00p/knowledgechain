@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { config } from './config';
-import logger from './utils/logger';
+import logger from './config/logger';
 
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';

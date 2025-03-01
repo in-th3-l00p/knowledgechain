@@ -1,10 +1,12 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { authenticateToken, checkPermission, AuthRequest } from '../../src/middleware/auth.middleware';
+import { authenticateToken } from '../../src/middleware/auth.middleware';
 import { config } from '../../src/config';
-import prisma from '../../src/utils/prisma';
+import prisma from '../../src/config/prisma';
+import {checkPermission} from "../../src/utils/checkPermission";
+import {AuthRequest} from "../../src/types/authRequest";
 
-jest.mock('../../src/utils/logger', () => ({
+jest.mock('../../src/config/logger', () => ({
   error: jest.fn(),
 }));
 

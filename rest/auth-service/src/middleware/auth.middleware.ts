@@ -1,16 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
+import {NextFunction, Response} from 'express';
 import jwt from 'jsonwebtoken';
-import { config } from '../config';
-import logger from '../utils/logger';
-import prisma from "../utils/prisma";
-
-export interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    roles: string[];
-  };
-}
+import {config} from '../config';
+import logger from '../config/logger';
+import prisma from "../config/prisma";
+import {AuthRequest} from "../types/authRequest";
 
 export const authenticateToken = async (
   req: AuthRequest,
@@ -61,38 +54,3 @@ export const authenticateToken = async (
   }
 };
 
-export const checkPermission = (requiredPermission: string) => {
-  return async (req: AuthRequest, res: Response, next: NextFunction) => {
-    try {
-      if (!req.user) {
-        res.status(401).json({ message: 'User not authenticated' });
-        return;
-      }
-
-      const userPermissions = await prisma.permission.findMany({
-        where: {
-          roles: {
-            some: {
-              role: {
-                users: {
-                  some: {
-                    userId: req.user.id,
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
-
-      if (userPermissions.some(p => p.name === requiredPermission)) {
-        next();
-      } else {
-        res.status(403).json({ message: 'Insufficient permissions' });
-      }
-    } catch (error) {
-      logger.error('Permission check error:', error);
-      res.status(500).json({ message: 'Error checking permissions' });
-    }
-  };
-}; 

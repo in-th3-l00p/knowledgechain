@@ -1,11 +1,11 @@
 import request from 'supertest';
 import bcrypt from 'bcryptjs';
 import app from '../../src/main';
-import prisma from "../../src/utils/prisma";
+import prisma from "../../src/config/prisma";
 import jwt from "jsonwebtoken";
 import {config} from "../../src/config";
 
-jest.mock('../../src/utils/logger', () => ({
+jest.mock('../../src/config/logger', () => ({
   info: jest.fn(),
 }))
 
