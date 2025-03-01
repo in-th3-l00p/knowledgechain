@@ -3,13 +3,20 @@ import logger from './utils/logger';
 import dotenv from 'dotenv';
 import userRoutes from './routes/users';
 import { initializeKafka } from './utils/kafka';
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+    logger.info(`${req.method} ${req.path}`);
+    next();
+});
 
 app.use('/api/users', userRoutes);
 
@@ -32,4 +39,4 @@ const startApplication = async () => {
     }
 };
 
-startApplication();
+startApplication().then(() => {});
