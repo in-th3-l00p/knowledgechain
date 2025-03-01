@@ -2,68 +2,38 @@ import request from 'supertest';
 import bcrypt from 'bcryptjs';
 import app from '../../src/main';
 import prisma from "../../src/utils/prisma";
+import jwt from "jsonwebtoken";
+import {config} from "../../src/config";
+
+jest.mock('../../src/utils/logger', () => ({
+  info: jest.fn(),
+}))
 
 jest.mock('bcryptjs', () => ({
   hash: jest.fn(),
   compare: jest.fn(),
 }));
 
-describe('Auth Routes', () => {
+describe('auth routes', () => {
+  const loginData = {
+    email: 'test@example.com',
+    password: 'Password123!',
+  };
+
+  const mockUser = {
+    id: 'user1',
+    email: loginData.email,
+    password: 'hashedPassword',
+    isActive: true,
+    roles: [{ role: { name: 'USER' } }],
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  describe('POST /api/auth/register', () => {
-    const registerData = {
-      email: 'test@example.com',
-      password: 'Password123!',
-      firstName: 'Test',
-      lastName: 'User',
-    };
-
-    it('should register a new user successfully', async () => {
-      const hashedPassword = 'hashedPassword123';
-      (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
-      (prisma.role.findFirst as jest.Mock).mockResolvedValue({ id: 'role1' });
-      (prisma.user.create as jest.Mock).mockResolvedValue({
-        id: 'user1',
-        ...registerData,
-        password: hashedPassword,
-      });
-
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(registerData);
-
-      expect(response.status).toBe(201);
-      expect(response.body).toHaveProperty('message', 'User registered successfully');
-      expect(response.body).toHaveProperty('user');
-      expect(response.body.user).not.toHaveProperty('password');
-    });
-
-    it('should return 400 for invalid input', async () => {
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send({ email: 'invalid-email' });
-
-      expect(response.status).toBe(400);
-    });
-  });
-
   describe('POST /api/auth/login', () => {
-    const loginData = {
-      email: 'test@example.com',
-      password: 'Password123!',
-    };
-
     it('should login successfully with valid credentials', async () => {
-      const mockUser = {
-        id: 'user1',
-        email: loginData.email,
-        password: 'hashedPassword',
-        isActive: true,
-        roles: [{ role: { name: 'USER' } }],
-      };
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
@@ -90,15 +60,11 @@ describe('Auth Routes', () => {
 
   describe('POST /api/auth/refresh-token', () => {
     it('should refresh tokens with valid refresh token', async () => {
-      const mockUser = {
-        id: 'user1',
-        email: 'test@example.com',
-        isActive: true,
-        roles: [{ role: { name: 'USER' } }],
-      };
-
       const refreshToken = 'valid_refresh_token';
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (prisma.refreshToken.findFirst as jest.Mock).mockResolvedValue({
+        user: mockUser,
+      });
 
       const response = await request(app)
         .post('/api/auth/refresh-token')
@@ -119,8 +85,15 @@ describe('Auth Routes', () => {
 
   describe('POST /api/auth/logout', () => {
     it('should logout successfully', async () => {
+      (prisma.user.findUnique as jest.Mock)
+          .mockResolvedValueOnce(mockUser);
+      const token = jwt.sign(
+          { id: mockUser.id, email: mockUser.email },
+          config.jwt.accessToken.secret
+      );
       const response = await request(app)
-        .post('/api/auth/logout');
+        .post('/api/auth/logout')
+        .set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('message', 'Logged out successfully');

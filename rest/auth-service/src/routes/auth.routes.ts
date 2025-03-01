@@ -143,7 +143,6 @@ router.post(
     try {
       const { refreshToken } = req.body;
 
-      // Revoke refresh token
       await prisma.refreshToken.updateMany({
         where: {
           userId: req.user!.id,
@@ -155,7 +154,6 @@ router.post(
         },
       });
 
-      // Invalidate sessions
       await prisma.session.updateMany({
         where: {
           userId: req.user!.id,
