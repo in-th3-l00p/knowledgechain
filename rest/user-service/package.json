@@ -4,7 +4,7 @@
   "main": "src/main.ts",
   "scripts": {
     "start": "node dist/main.js",
-    "dev": "nodemon src/main.ts",
+    "dev": "nodemon --legacy-watch src/main.ts",
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
     "test": "jest"

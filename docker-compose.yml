@@ -30,6 +30,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
+      kafka:
+        condition: service_healthy
       postgres:
         condition: service_healthy
     networks:
@@ -51,6 +53,8 @@ services:
     ports:
       - "3001:3000"
     depends_on:
+      kafka:
+        condition: service_healthy
       postgres:
         condition: service_healthy
     networks:
