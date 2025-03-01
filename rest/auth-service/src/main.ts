@@ -23,9 +23,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/auth/users', userRoutes);
 app.use('/api/auth/roles', roleRoutes);
 
-app.use((err: Error, req: express.Request, res: express.Response) => {
-  logger.error('Unhandled error:', err);
-  res.status(500).json({ message: 'Internal server error' });
+app.use((req, res) => {
+  res.status(404).send({ error: 'Not Found' });
 });
 
 const PORT = config.port;
