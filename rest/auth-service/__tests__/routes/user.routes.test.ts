@@ -1,41 +1,20 @@
 import request from 'supertest';
-import { PrismaClient } from '@prisma/client';
 import app from '../../src/main';
 import jwt from 'jsonwebtoken';
 import { config } from '../../src/config';
-
-// Mock PrismaClient
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn().mockImplementation(() => ({
-    user: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-    userRole: {
-      deleteMany: jest.fn(),
-      create: jest.fn(),
-    },
-  })),
-}));
+import prisma from "../../src/utils/prisma";
 
 describe('User Routes', () => {
-  let prisma: jest.Mocked<PrismaClient>;
   let authToken: string;
-
   beforeEach(() => {
-    prisma = new PrismaClient() as jest.Mocked<PrismaClient>;
     jest.clearAllMocks();
-
-    // Create a valid auth token for testing
     authToken = jwt.sign(
       { id: 'admin1', email: 'admin@example.com' },
       config.jwt.accessToken.secret
     );
   });
 
-  describe('GET /api/users', () => {
+  describe('GET /api/auth/users', () => {
     it('should return list of users when authenticated', async () => {
       const mockUsers = [
         { id: '1', email: 'user1@example.com', firstName: 'User', lastName: 'One' },
@@ -45,7 +24,7 @@ describe('User Routes', () => {
       (prisma.user.findMany as jest.Mock).mockResolvedValue(mockUsers);
 
       const response = await request(app)
-        .get('/api/users')
+        .get('/api/auth/users')
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(response.status).toBe(200);
@@ -54,13 +33,13 @@ describe('User Routes', () => {
     });
 
     it('should return 401 when not authenticated', async () => {
-      const response = await request(app).get('/api/users');
+      const response = await request(app).get('/api/auth/users');
 
       expect(response.status).toBe(401);
     });
   });
 
-  describe('GET /api/users/:id', () => {
+  describe('GET /api/auth/users/:id', () => {
     it('should return user details when authenticated', async () => {
       const mockUser = {
         id: '1',
@@ -73,7 +52,7 @@ describe('User Routes', () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
       const response = await request(app)
-        .get('/api/users/1')
+        .get('/api/auth/users/1')
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(response.status).toBe(200);
@@ -84,14 +63,14 @@ describe('User Routes', () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app)
-        .get('/api/users/999')
+        .get('/api/auth/users/999')
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(response.status).toBe(404);
     });
   });
 
-  describe('PUT /api/users/:id', () => {
+  describe('PUT /api/auth/users/:id', () => {
     const updateData = {
       firstName: 'Updated',
       lastName: 'User',
@@ -109,7 +88,7 @@ describe('User Routes', () => {
       (prisma.user.update as jest.Mock).mockResolvedValue(mockUpdatedUser);
 
       const response = await request(app)
-        .put('/api/users/1')
+        .put('/api/auth/users/1')
         .set('Authorization', `Bearer ${authToken}`)
         .send(updateData);
 
@@ -121,7 +100,7 @@ describe('User Routes', () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app)
-        .put('/api/users/999')
+        .put('/api/auth/users/999')
         .set('Authorization', `Bearer ${authToken}`)
         .send(updateData);
 
@@ -129,7 +108,7 @@ describe('User Routes', () => {
     });
   });
 
-  describe('DELETE /api/users/:id', () => {
+  describe('DELETE /api/auth/users/:id', () => {
     it('should delete user successfully', async () => {
       const mockUser = {
         id: '1',
@@ -141,7 +120,7 @@ describe('User Routes', () => {
       (prisma.user.delete as jest.Mock).mockResolvedValue(mockUser);
 
       const response = await request(app)
-        .delete('/api/users/1')
+        .delete('/api/auth/users/1')
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(response.status).toBe(200);
@@ -152,7 +131,7 @@ describe('User Routes', () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app)
-        .delete('/api/users/999')
+        .delete('/api/auth/users/999')
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(response.status).toBe(404);

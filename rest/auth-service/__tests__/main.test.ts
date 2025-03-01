@@ -9,8 +9,8 @@ jest.mock('../src/utils/logger', () => ({
   error: jest.fn(),
 }));
 
-describe('Express Application', () => {
-  describe('Middleware Setup', () => {
+describe('express app', () => {
+  describe('middleware Setup', () => {
     it('should log incoming requests', async () => {
       await request(app).get('/api/nonexistent');
       expect(logger.info).toHaveBeenCalledWith('GET /api/nonexistent');
@@ -35,19 +35,19 @@ describe('Express Application', () => {
     });
   });
 
-  describe('Route Setup', () => {
+  describe('route setup', () => {
     it('should have auth routes mounted', async () => {
       const response = await request(app).post('/api/auth/login').send();
       expect(response.status).not.toBe(404);
     });
 
     it('should have user routes mounted', async () => {
-      const response = await request(app).get('/api/users/profile');
+      const response = await request(app).get('/api/auth/users/profile');
       expect(response.status).not.toBe(404);
     });
 
     it('should have role routes mounted', async () => {
-      const response = await request(app).get('/api/roles');
+      const response = await request(app).get('/api/auth/roles');
       expect(response.status).not.toBe(404);
     });
   });

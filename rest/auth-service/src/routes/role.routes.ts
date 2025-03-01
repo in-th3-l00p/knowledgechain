@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { authenticateToken, checkPermission } from '../middleware/auth.middleware';
+import prisma from '../utils/prisma';
 import logger from '../utils/logger';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 router.get('/',
   authenticateToken, 

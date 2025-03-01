@@ -14,6 +14,7 @@ const config: Config.InitialOptions = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   roots: ['<rootDir>'],
+  setupFilesAfterEnv: ['<rootDir>/__tests__/prisma/singleton.ts'],
 };
 
 export default config; 

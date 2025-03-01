@@ -1,41 +1,22 @@
 import request from 'supertest';
-import { PrismaClient } from '@prisma/client';
 import app from '../../src/main';
 import jwt from 'jsonwebtoken';
 import { config } from '../../src/config';
-
-// Mock PrismaClient
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn().mockImplementation(() => ({
-    role: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-    permission: {
-      findMany: jest.fn(),
-    },
-  })),
-}));
+import prisma from "../../src/utils/prisma";
 
 describe('Role Routes', () => {
-  let prisma: jest.Mocked<PrismaClient>;
   let adminToken: string;
 
   beforeEach(() => {
-    prisma = new PrismaClient() as jest.Mocked<PrismaClient>;
     jest.clearAllMocks();
 
-    // Create a valid admin token for testing
     adminToken = jwt.sign(
       { id: 'admin1', email: 'admin@example.com' },
       config.jwt.accessToken.secret
     );
   });
 
-  describe('GET /api/roles', () => {
+  describe('GET /api/auth/roles', () => {
     it('should return list of roles when authenticated', async () => {
       const mockRoles = [
         { id: '1', name: 'ADMIN', description: 'Administrator' },
@@ -45,7 +26,7 @@ describe('Role Routes', () => {
       (prisma.role.findMany as jest.Mock).mockResolvedValue(mockRoles);
 
       const response = await request(app)
-        .get('/api/roles')
+        .get('/api/auth/roles')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -54,13 +35,13 @@ describe('Role Routes', () => {
     });
 
     it('should return 401 when not authenticated', async () => {
-      const response = await request(app).get('/api/roles');
+      const response = await request(app).get('/api/auth/roles');
 
       expect(response.status).toBe(401);
     });
   });
 
-  describe('GET /api/roles/:id', () => {
+  describe('GET /api/auth/roles/:id', () => {
     it('should return role details when authenticated', async () => {
       const mockRole = {
         id: '1',
@@ -75,7 +56,7 @@ describe('Role Routes', () => {
       (prisma.role.findUnique as jest.Mock).mockResolvedValue(mockRole);
 
       const response = await request(app)
-        .get('/api/roles/1')
+        .get('/api/auth/roles/1')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -87,14 +68,14 @@ describe('Role Routes', () => {
       (prisma.role.findUnique as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app)
-        .get('/api/roles/999')
+        .get('/api/auth/roles/999')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(404);
     });
   });
 
-  describe('POST /api/roles', () => {
+  describe('POST /api/auth/roles', () => {
     const newRole = {
       name: 'MODERATOR',
       description: 'Content Moderator',
@@ -110,7 +91,7 @@ describe('Role Routes', () => {
       (prisma.role.create as jest.Mock).mockResolvedValue(mockCreatedRole);
 
       const response = await request(app)
-        .post('/api/roles')
+        .post('/api/auth/roles')
         .set('Authorization', `Bearer ${adminToken}`)
         .send(newRole);
 
@@ -120,7 +101,7 @@ describe('Role Routes', () => {
 
     it('should return 400 for invalid input', async () => {
       const response = await request(app)
-        .post('/api/roles')
+        .post('/api/auth/roles')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ name: '' });
 
@@ -128,7 +109,7 @@ describe('Role Routes', () => {
     });
   });
 
-  describe('PUT /api/roles/:id', () => {
+  describe('PUT /api/auth/roles/:id', () => {
     const updateData = {
       name: 'SUPER_ADMIN',
       description: 'Super Administrator',
@@ -145,7 +126,7 @@ describe('Role Routes', () => {
       (prisma.role.update as jest.Mock).mockResolvedValue(mockUpdatedRole);
 
       const response = await request(app)
-        .put('/api/roles/1')
+        .put('/api/auth/roles/1')
         .set('Authorization', `Bearer ${adminToken}`)
         .send(updateData);
 
@@ -157,7 +138,7 @@ describe('Role Routes', () => {
       (prisma.role.findUnique as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app)
-        .put('/api/roles/999')
+        .put('/api/auth/roles/999')
         .set('Authorization', `Bearer ${adminToken}`)
         .send(updateData);
 
@@ -165,7 +146,7 @@ describe('Role Routes', () => {
     });
   });
 
-  describe('DELETE /api/roles/:id', () => {
+  describe('DELETE /api/auth/roles/:id', () => {
     it('should delete role successfully', async () => {
       const mockRole = {
         id: '1',
@@ -177,7 +158,7 @@ describe('Role Routes', () => {
       (prisma.role.delete as jest.Mock).mockResolvedValue(mockRole);
 
       const response = await request(app)
-        .delete('/api/roles/1')
+        .delete('/api/auth/roles/1')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -188,7 +169,7 @@ describe('Role Routes', () => {
       (prisma.role.findUnique as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app)
-        .delete('/api/roles/999')
+        .delete('/api/auth/roles/999')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(response.status).toBe(404);

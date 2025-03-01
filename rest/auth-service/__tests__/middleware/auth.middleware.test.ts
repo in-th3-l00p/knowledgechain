@@ -1,33 +1,20 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
 import { authenticateToken, checkPermission, AuthRequest } from '../../src/middleware/auth.middleware';
 import { config } from '../../src/config';
+import prisma from '../../src/utils/prisma';
 
-// Mock PrismaClient
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn().mockImplementation(() => ({
-    user: {
-      findUnique: jest.fn(),
-    },
-    permission: {
-      findMany: jest.fn(),
-    },
-  })),
-}));
-
-// Mock logger
 jest.mock('../../src/utils/logger', () => ({
   error: jest.fn(),
 }));
 
-describe('Auth Middleware', () => {
+describe('auth middleware', () => {
   let mockReq: Partial<AuthRequest>;
   let mockRes: Partial<Response>;
   let mockNext: NextFunction;
-  let prisma: jest.Mocked<PrismaClient>;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     mockReq = {
       headers: {},
     };
@@ -36,7 +23,6 @@ describe('Auth Middleware', () => {
       json: jest.fn(),
     };
     mockNext = jest.fn();
-    prisma = new PrismaClient() as jest.Mocked<PrismaClient>;
   });
 
   describe('authenticateToken', () => {
@@ -72,9 +58,14 @@ describe('Auth Middleware', () => {
       );
 
       mockReq.headers = { authorization: `Bearer ${token}` };
-      (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce(mockUser);
-
-      await authenticateToken(mockReq as AuthRequest, mockRes as Response, mockNext);
+      
+      (prisma.user.findUnique as jest.Mock)
+          .mockResolvedValueOnce(mockUser);
+      await authenticateToken(
+          mockReq as AuthRequest,
+          mockRes as Response,
+          mockNext
+      );
 
       expect(mockNext).toHaveBeenCalled();
       expect(mockReq.user).toEqual({

@@ -1,37 +1,16 @@
 import request from 'supertest';
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import app from '../../src/main';
+import prisma from "../../src/utils/prisma";
 
-// Mock PrismaClient
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn().mockImplementation(() => ({
-    user: {
-      create: jest.fn(),
-      findUnique: jest.fn(),
-      update: jest.fn(),
-    },
-    role: {
-      findFirst: jest.fn(),
-    },
-    userRole: {
-      create: jest.fn(),
-    },
-  })),
-}));
-
-// Mock bcryptjs
 jest.mock('bcryptjs', () => ({
   hash: jest.fn(),
   compare: jest.fn(),
 }));
 
 describe('Auth Routes', () => {
-  let prisma: jest.Mocked<PrismaClient>;
-
   beforeEach(() => {
-    prisma = new PrismaClient() as jest.Mocked<PrismaClient>;
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('POST /api/auth/register', () => {

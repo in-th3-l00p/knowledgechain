@@ -1,14 +1,13 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 import { config } from '../config';
 import { authenticateToken, AuthRequest } from '../middleware/auth.middleware';
 import logger from '../utils/logger';
 import {body, validationResult} from "express-validator";
+import prisma from "../utils/prisma";
 
 const router = Router();
-const prisma = new PrismaClient();
 
 router.post(
   '/login',
