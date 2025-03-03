@@ -5,6 +5,7 @@ import cors from "cors";
 import articleRoutes from "./routes/article.routes";
 import videoRoutes from "./routes/video.routes";
 import captionRoutes from "./routes/caption.routes";
+import tagRoutes from "./routes/tag.routes";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 app.use("/api/articles", articleRoutes);
 app.use("/api/articles/videos", videoRoutes);
 app.use("/api/articles/captions", captionRoutes);
+app.use("/api/articles/tags", tagRoutes);
 
 app.use((req, res) => {
     res.status(404).send({ error: 'Not Found' });
