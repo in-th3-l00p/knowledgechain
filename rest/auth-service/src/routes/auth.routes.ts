@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
-import { config } from '../config';
+import { config } from '../utils/config';
 import { authenticateToken } from '../middleware/auth.middleware';
-import logger from '../config/logger';
+import logger from '../utils/logger';
 import {body, validationResult} from "express-validator";
-import prisma from "../config/prisma";
+import prisma from "../utils/prisma";
 import {AuthRequest} from "../types/authRequest";
 
 const router = Router();

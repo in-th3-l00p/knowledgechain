@@ -1,6 +1,6 @@
 import {NextFunction, Response} from "express";
-import prisma from "../config/prisma";
-import logger from "../config/logger";
+import prisma from "./prisma";
+import logger from "./logger";
 
 import {AuthRequest} from "../types/authRequest";
 

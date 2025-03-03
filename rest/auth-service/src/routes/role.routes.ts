@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authenticateToken } from '../middleware/auth.middleware';
-import prisma from '../config/prisma';
-import logger from '../config/logger';
+import prisma from '../utils/prisma';
+import logger from '../utils/logger';
 import {checkPermission} from "../utils/checkPermission";
 
 const router = Router();

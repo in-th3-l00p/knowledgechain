@@ -1,8 +1,8 @@
 import {NextFunction, Response} from 'express';
 import jwt from 'jsonwebtoken';
-import {config} from '../config';
-import logger from '../config/logger';
-import prisma from "../config/prisma";
+import {config} from '../utils/config';
+import logger from '../utils/logger';
+import prisma from "../utils/prisma";
 import {AuthRequest} from "../types/authRequest";
 
 export const authenticateToken = async (

@@ -1,12 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { config } from './config';
-import logger from './config/logger';
+import logger from './utils/logger';
 
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import roleRoutes from './routes/role.routes';
+import {initializeKafka} from "./utils/kafka";
+import userSyncService from './services/UserSyncService';
 
 const app = express();
 
@@ -27,9 +28,22 @@ app.use((req, res) => {
   res.status(404).send({ error: 'Not Found' });
 });
 
-const PORT = config.port;
-app.listen(PORT, () => {
-  logger.info(`Auth service running on port ${PORT}`);
-});
+const port = process.env.PORT || 3000;
 
-export default app; 
+const startApplication = async () => {
+  try {
+    await initializeKafka();
+    await userSyncService.initialize();
+
+    app.listen(port, () => {
+      logger.info(`Auth service is running on port ${port}`);
+    });
+  } catch (error) {
+    logger.error('Failed to start application:', error);
+    process.exit(1);
+  }
+};
+
+startApplication().then(() => {});
+
+export default app;

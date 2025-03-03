@@ -2,9 +2,9 @@ process.env.PORT = "8000"; // testing port
 
 import request from 'supertest';
 import app from '../src/main';
-import logger from '../src/config/logger';
+import logger from '../src/utils/logger';
 
-jest.mock('../src/config/logger', () => ({
+jest.mock('../src/utils/logger', () => ({
   info: jest.fn(),
   error: jest.fn(),
 }));
