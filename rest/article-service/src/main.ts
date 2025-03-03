@@ -1,10 +1,9 @@
 import express from 'express';
 import logger from './utils/logger';
-import dotenv from 'dotenv';
 import { initializeKafka } from './utils/kafka';
 import cors from "cors";
-
-dotenv.config();
+import articleRoutes from "./routes/article.routes";
+import videoRoutes from "./routes/video.routes";
 
 const app = express();
 
@@ -16,6 +15,9 @@ app.use((req, res, next) => {
     logger.info(`${req.method} ${req.path}`);
     next();
 });
+
+app.use("/api/articles", articleRoutes);
+app.use("/api/articles/videos", videoRoutes);
 
 app.use((req, res) => {
     res.status(404).send({ error: 'Not Found' });
