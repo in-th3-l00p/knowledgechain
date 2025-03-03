@@ -11,7 +11,6 @@ const logger = winston.createLogger({
         winston.format.json()
     ),
     transports: [
-        // Console transport with colorized output for development
         new winston.transports.Console({
             format: winston.format.combine(
                 winston.format.colorize(),
@@ -23,7 +22,6 @@ const logger = winston.createLogger({
             )
         }),
         
-        // File transports for production
         ...(process.env.NODE_ENV === 'production' ? [
             new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
             new winston.transports.File({ filename: 'logs/combined.log' })

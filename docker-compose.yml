@@ -60,6 +60,29 @@ services:
     networks:
       - backend-network
 
+  article-service:
+    build:
+      context: ./rest/article-service
+      dockerfile: Dockerfile.dev
+    container_name: article-service-dev
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=postgresql://postgres:@postgres:5432/article-service?schema=public
+      - KAFKA_BROKERS=kafka:9092
+    volumes:
+      - ./rest/article-service:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3001:3000"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend-network
+
   nginx:
     image: nginx:latest
     container_name: nginx-proxy
