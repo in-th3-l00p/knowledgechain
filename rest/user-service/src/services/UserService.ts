@@ -2,6 +2,7 @@ import prisma from '../utils/prisma';
 import { User, Prisma } from '@prisma/client';
 import { getProducer } from '../utils/kafka';
 import logger from '../utils/logger';
+import bcrypt from 'bcrypt';
 
 class UserService {
   private async publishUserEvent(topic: string, payload: any) {
@@ -23,6 +24,11 @@ class UserService {
     }
   }
 
+  private async hashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    return bcrypt.hash(password, saltRounds);
+  }
+
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     const existingEmail = await this.getUserByEmail(data.email);
     if (existingEmail) {
@@ -34,6 +40,10 @@ class UserService {
     if (existingUsername) {
       logger.info(`Username already taken: ${data.username}`);
       throw new Error('Username already taken');
+    }
+
+    if ('password' in data) {
+      data.password = await this.hashPassword(data.password);
     }
 
     const user = await prisma.user.create({ data });
@@ -115,6 +125,10 @@ class UserService {
         logger.info(`Update failed: Username already taken: ${data.username}`);
         throw new Error('Username already taken');
       }
+    }
+
+    if (data.password) {
+      data.password = await this.hashPassword(data.password as string);
     }
 
     const user = await prisma.user.update({
