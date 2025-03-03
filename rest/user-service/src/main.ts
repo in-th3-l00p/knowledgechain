@@ -2,6 +2,7 @@ import express from 'express';
 import logger from './utils/logger';
 import dotenv from 'dotenv';
 import userRoutes from './routes/users';
+import walletRoutes from './routes/wallets';
 import { initializeKafka } from './utils/kafka';
 import cors from "cors";
 
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/users', userRoutes);
+app.use("/api/users/wallets", walletRoutes);
 
 app.use((req, res) => {
     res.status(404).send({ error: 'Not Found' });
