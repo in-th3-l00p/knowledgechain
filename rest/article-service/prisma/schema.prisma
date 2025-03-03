@@ -25,7 +25,6 @@ model Article {
   tags        ArticleTag[]
   categories  ArticleCategory[]
   comments    Comment[]
-  revisions   ArticleRevision[]
 
   @@map("articles")
 }
@@ -124,18 +123,6 @@ model Comment {
   replies     Comment[] @relation("CommentReplies")
 
   @@map("comments")
-}
-
-model ArticleRevision {
-  id          String   @id @default(uuid())
-  articleId   String
-  content     String   
-  description String?  
-  createdAt   DateTime @default(now())
-
-  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-
-  @@map("article_revisions")
 }
 
 enum ArticleStatus {
