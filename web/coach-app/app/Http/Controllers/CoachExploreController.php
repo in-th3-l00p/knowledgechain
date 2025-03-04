@@ -11,6 +11,9 @@ class CoachExploreController extends Controller
     {
         $coaches = CoachProfile::with('user')
             ->where('is_available', true)
+            ->when(auth()->check(), function($query) {
+                return $query->where('user_id', '!=', auth()->id());
+            })
             ->when($request->has('expertise'), function($query) use ($request) {
                 return $query->where('expertise', 'like', '%' . $request->expertise . '%');
             })
