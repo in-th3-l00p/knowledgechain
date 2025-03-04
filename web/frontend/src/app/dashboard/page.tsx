@@ -122,9 +122,9 @@ export default function Dashboard() {
   const { address, isConnected: isWagmiConnected } = useAccount()
 
   useEffect(() => {
-    // if (!authLoading && !isAuthenticated) {
-    //   router.push('/login')
-    // }
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login')
+    }
   }, [isAuthenticated, authLoading, router])
 
   useEffect(() => {
@@ -133,7 +133,7 @@ export default function Dashboard() {
       
       try {
         setIsLoading(true)
-        const response = await api.get('/api/articles', {
+        const response = await api.get('/api/articles/', {
           params: {
             authorId: user.id,
             status: 'PUBLISHED',

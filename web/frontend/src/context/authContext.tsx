@@ -46,7 +46,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true)
     const [isConnectingWallet, setIsConnectingWallet] = useState(false)
 
-    const { address, isConnected } = useAccount()
+    const {isConnected } = useAccount()
     const { connectAsync, connectors } = useConnect()
     const { disconnectAsync } = useDisconnect()
 
@@ -103,46 +103,46 @@ export function AuthProvider({children}: { children: ReactNode }) {
         fetchUserWallet();
     }, [user?.id, isConnected]);
 
-    useEffect(() => {
-        const updateWalletInDB = async () => {
-            if (!user?.id || !address || !isConnected) return;
-
-            if (wallet?.address === address) return;
-
-            try {
-                setIsConnectingWallet(true);
-
-                if (wallet?.id) {
-                    // Update existing wallet
-                    await api.put(`/api/users/wallets/${wallet.id}`, {
-                        address,
-                    }, {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-                        }
-                    });
-                } else {
-                    // Create new wallet
-                    const response = await api.post('/api/users/wallets', {
-                        address,
-                        userId: user.id
-                    }, {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-                        }
-                    });
-
-                    setWallet(response.data);
-                }
-            } catch (error) {
-                console.error('Failed to update wallet in database:', error);
-            } finally {
-                setIsConnectingWallet(false);
-            }
-        };
-
-        updateWalletInDB();
-    }, [user?.id, address, isConnected, wallet?.id, wallet?.address]);
+    // useEffect(() => {
+    //     const updateWalletInDB = async () => {
+    //         if (!user?.id || !address || !isConnected) return;
+    //
+    //         if (wallet?.address === address) return;
+    //
+    //         try {
+    //             setIsConnectingWallet(true);
+    //
+    //             if (wallet?.id) {
+    //                 // Update existing wallet
+    //                 await api.put(`/api/users/wallets/${wallet.id}`, {
+    //                     address,
+    //                 }, {
+    //                     headers: {
+    //                         Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+    //                     }
+    //                 });
+    //             } else {
+    //                 // Create new wallet
+    //                 const response = await api.post('/api/users/wallets', {
+    //                     address,
+    //                     userId: user.id
+    //                 }, {
+    //                     headers: {
+    //                         Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+    //                     }
+    //                 });
+    //
+    //                 setWallet(response.data);
+    //             }
+    //         } catch (error) {
+    //             console.error('Failed to update wallet in database:', error);
+    //         } finally {
+    //             setIsConnectingWallet(false);
+    //         }
+    //     };
+    //
+    //     updateWalletInDB();
+    // }, [user?.id, address, isConnected, wallet?.id, wallet?.address]);
 
     const login = async (email: string, password: string) => {
         setIsLoading(true)
@@ -188,6 +188,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
             console.error('Error connecting wallet:', error);
         } finally {
             setIsConnectingWallet(false);
+            window.location.reload();
         }
     };
 
@@ -196,6 +197,8 @@ export function AuthProvider({children}: { children: ReactNode }) {
             await disconnectAsync();
         } catch (error) {
             console.error('Error disconnecting wallet:', error);
+        } finally {
+            window.location.reload();
         }
     };
 
