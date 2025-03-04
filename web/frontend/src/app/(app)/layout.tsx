@@ -1,24 +1,15 @@
-import React, {useEffect} from "react";
-import {useAuth} from "@/hooks/useAuth";
-import {useRouter} from "next/navigation";
+"use client";
 
-export default function AppLayout({ children }: {
-    children: React.ReactNode
-}) {
-    const router = useRouter()
-    const {
-        isAuthenticated,
-        isLoading: authLoading,
-    } = useAuth()
+import Protected from "@/app/(app)/protected";
 
-    useEffect(() => {
-        if (!authLoading && !isAuthenticated) {
-            router.push('/login')
-        }
-    }, [isAuthenticated, authLoading, router])
 
+export default function AppLayout({ children, }: Readonly<{
+    children: React.ReactNode;
+}>) {
 
     return (
-        {children}
+        <Protected>
+            {children}
+        </Protected>
     );
 }
