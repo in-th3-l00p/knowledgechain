@@ -26,7 +26,19 @@
                         </x-nav-link>
                     @endif
                     
-                    <!-- ... other nav links ... -->
+                    <x-nav-link href="{{ route('coaches.explore') }}" :active="request()->routeIs('coaches.explore')">
+                        {{ __('Explore Coaches') }}
+                    </x-nav-link>
+                    
+                    @if(auth()->user()->isCoach())
+                        <x-nav-link href="{{ route('coach.requests') }}" :active="request()->routeIs('coach.requests')">
+                            {{ __('Coaching Requests') }}
+                        </x-nav-link>
+                    @endif
+                    
+                    <x-nav-link href="{{ route('chats') }}" :active="request()->routeIs('chats')">
+                        {{ __('Chats') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -164,6 +176,20 @@
                     {{ __('My Availability') }}
                 </x-responsive-nav-link>
             @endif
+            
+            <x-responsive-nav-link href="{{ route('coaches.explore') }}" :active="request()->routeIs('coaches.explore')">
+                {{ __('Explore Coaches') }}
+            </x-responsive-nav-link>
+            
+            @if(auth()->user()->isCoach())
+                <x-responsive-nav-link href="{{ route('coach.requests') }}" :active="request()->routeIs('coach.requests')">
+                    {{ __('Coaching Requests') }}
+                </x-responsive-nav-link>
+            @endif
+            
+            <x-responsive-nav-link href="{{ route('chats') }}" :active="request()->routeIs('chats')">
+                {{ __('Chats') }}
+            </x-responsive-nav-link>
             
             <!-- ... other responsive nav links ... -->
         </div>
