@@ -110,8 +110,7 @@ export default function Dashboard() {
   const [userArticles, setUserArticles] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   
-  const router = useRouter()
-  const { 
+  const {
     user, 
     isAuthenticated, 
     isLoading: authLoading, 
@@ -120,12 +119,6 @@ export default function Dashboard() {
     disconnectWallet 
   } = useAuth()
   const { address, isConnected: isWagmiConnected } = useAccount()
-
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push('/login')
-    }
-  }, [isAuthenticated, authLoading, router])
 
   useEffect(() => {
     const fetchUserArticles = async () => {
