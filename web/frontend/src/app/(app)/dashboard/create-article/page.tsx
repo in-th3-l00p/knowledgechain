@@ -27,7 +27,7 @@ export default function CreateArticle() {
   // Article form state
   const [title, setTitle] = useState('')
   const [summary, setSummary] = useState('')
-  const [status, setStatus] = useState<'DRAFT' | 'PENDING_REVIEW'>('DRAFT')
+  const [status, setStatus] = useState<'DRAFT' | 'PUBLISHED'>('DRAFT')
   
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -82,7 +82,7 @@ export default function CreateArticle() {
         content: editor?.getHTML(),
         summary: summary.trim(),
         authorId: user.id,
-        status: asDraft ? 'DRAFT' : 'PENDING_REVIEW',
+        status: asDraft ? 'DRAFT' : 'PUBLISHED',
         published: !asDraft
       }
       
@@ -164,7 +164,7 @@ export default function CreateArticle() {
             disabled={isSubmitting || isSavingDraft}
             className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            {isSubmitting ? 'Submitting...' : 'Submit for Review'}
+            {isSubmitting ? 'Publishing...' : 'Publish'}
           </button>
         </div>
       </div>
