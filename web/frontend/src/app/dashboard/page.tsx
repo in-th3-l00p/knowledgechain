@@ -15,9 +15,9 @@ import {
 import { BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import api from "@/utils/api"; // Assuming you have an auth hook
+import api from "@/utils/api";
+import { useAccount } from 'wagmi'
 
-// Navigation items for the dashboard
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', current: true },
   { name: 'My Articles', href: '/dashboard/my-articles', current: false },
@@ -31,7 +31,6 @@ const secondaryNavigation = [
   { name: 'All-time', href: '#', current: false },
 ]
 
-// Stats for the dashboard
 const stats = [
   { name: 'Courses Completed', value: '12', change: '+3', changeType: 'positive' },
   { name: 'Articles Created', value: '5', change: '+2', changeType: 'positive' },
@@ -108,41 +107,25 @@ function classNames(...classes: string[]): string {
 
 export default function Dashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [userWallet, setUserWallet] = useState<{ address: string; userId: string } | null>(null)
-  const [isWalletConnected, setIsWalletConnected] = useState(false)
-  const [walletAddress, setWalletAddress] = useState('')
   const [userArticles, setUserArticles] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   
   const router = useRouter()
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
+  const { 
+    user, 
+    isAuthenticated, 
+    isLoading: authLoading, 
+    isConnectingWallet, 
+    connectWallet, 
+    disconnectWallet 
+  } = useAuth()
+  const { address, isConnected: isWagmiConnected } = useAccount()
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push('/login')
-    }
+    // if (!authLoading && !isAuthenticated) {
+    //   router.push('/login')
+    // }
   }, [isAuthenticated, authLoading, router])
-  
-  useEffect(() => {
-    const fetchUserWallet = async () => {
-      if (!user?.id) return
-      
-      try {
-        const response = await api.get(`/api/users/wallets/user/${user.id}`)
-        if (response.data) {
-          setUserWallet(response.data)
-          setIsWalletConnected(true)
-          setWalletAddress(response.data.address)
-        }
-      } catch (error) {
-        console.error('Failed to fetch user wallet:', error)
-      }
-    }
-
-    if (isAuthenticated) {
-      fetchUserWallet()
-    }
-  }, [isAuthenticated, user?.id])
 
   useEffect(() => {
     const fetchUserArticles = async () => {
@@ -179,45 +162,13 @@ export default function Dashboard() {
     }
   }, [isAuthenticated, user?.id])
 
-  const handleConnectWallet = () => {
-    const mockAddress = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F'
-    setIsWalletConnected(true)
-    setWalletAddress(mockAddress)
-    saveWalletAddress(mockAddress)
+  // Use wagmi hooks to handle wallet connection
+  const handleConnectWallet = async () => {
+    await connectWallet();
   }
 
-  const handleDisconnectWallet = () => {
-    // Implement your own wallet disconnection logic
-    setIsWalletConnected(false)
-    setWalletAddress('')
-  }
-  
-  const saveWalletAddress = async (address: string) => {
-    if (!user?.id) return
-    
-    try {
-      if (
-          userWallet &&
-          typeof userWallet === 'object' &&
-          'address' in userWallet &&
-          (userWallet as any).address === address
-      ) {
-        return
-      }
-      
-      await api.post('/api/users/wallets', {
-        address: address,
-        userId: user.id
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      })
-      
-      setUserWallet({ address, userId: user.id })
-    } catch (error) {
-      console.error('Failed to save wallet address:', error)
-    }
+  const handleDisconnectWallet = async () => {
+    await disconnectWallet();
   }
 
   if (authLoading) {
@@ -320,15 +271,16 @@ export default function Dashboard() {
                 ))}
               </div>
               <div className="ml-auto flex items-center gap-x-4">
-                {isWalletConnected ? (
+                {isWagmiConnected ? (
                   <div className="flex items-center gap-x-2">
                     <WalletIcon className="h-5 w-5 text-green-500" />
                     <span className="text-sm text-gray-700 truncate max-w-[120px]">
-                      {walletAddress?.substring(0, 6)}...{walletAddress?.substring(walletAddress.length - 4)}
+                      {address?.substring(0, 6)}...{address?.substring(address.length - 4)}
                     </span>
                     <button
                       onClick={handleDisconnectWallet}
                       className="text-xs text-red-600 hover:text-red-500"
+                      disabled={isConnectingWallet}
                     >
                       Disconnect
                     </button>
@@ -337,9 +289,10 @@ export default function Dashboard() {
                   <button
                     onClick={handleConnectWallet}
                     className="flex items-center gap-x-1 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    disabled={isConnectingWallet}
                   >
                     <WalletIcon aria-hidden="true" className="-ml-0.5 size-5" />
-                    Connect Wallet
+                    {isConnectingWallet ? 'Connecting...' : 'Connect Wallet'}
                   </button>
                 )}
                 <a
