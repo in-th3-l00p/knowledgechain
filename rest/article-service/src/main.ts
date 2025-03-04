@@ -6,6 +6,7 @@ import articleRoutes from "./routes/article.routes";
 import videoRoutes from "./routes/video.routes";
 import captionRoutes from "./routes/caption.routes";
 import tagRoutes from "./routes/tag.routes";
+import commentRoutes from "./routes/comment.routes";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/api/articles", articleRoutes);
 app.use("/api/articles/videos", videoRoutes);
 app.use("/api/articles/captions", captionRoutes);
 app.use("/api/articles/tags", tagRoutes);
+app.use("/api/articles/comments", commentRoutes);
 
 app.use((req, res) => {
     res.status(404).send({ error: 'Not Found' });
