@@ -1,17 +1,27 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Login() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   });
+
+  useEffect(() => {
+    // Check if user was redirected from registration
+    const registered = searchParams.get('registered');
+    if (registered === 'true') {
+      setSuccessMessage('Account created successfully! Please sign in.');
+    }
+  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -78,6 +88,14 @@ export default function Login() {
             </div>
 
             <div className="mt-10">
+              {successMessage && (
+                <div className="mb-4 rounded-md bg-green-50 p-4">
+                  <div className="flex">
+                    <div className="text-sm text-green-700">{successMessage}</div>
+                  </div>
+                </div>
+              )}
+              
               {error && (
                 <div className="mb-4 rounded-md bg-red-50 p-4">
                   <div className="flex">
