@@ -50,9 +50,13 @@
                                 </div>
                                 
                                 <div class="mt-2">
-                                    <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                        Send Message
-                                    </a>
+                                    <form action="{{ route('chat.create') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="user_id" value="{{ $coach->user->id }}">
+                                        <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            Send Message
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

@@ -28,7 +28,12 @@ Route::middleware([
     Route::get('/coaches/{coach}', [CoachExploreController::class, 'show'])->name('coaches.show');
     
     // Chat routes
-    Route::get('/chats', [ChatController::class, 'index'])->name('chats');
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+        Route::get('/chat/{conversation}', [ChatController::class, 'show'])->name('chat.show');
+        Route::post('/chat/{conversation}/messages', [ChatController::class, 'store'])->name('chat.store');
+        Route::post('/chat/create', [ChatController::class, 'create'])->name('chat.create');
+    });
     
     // Session booking routes
     Route::get('/sessions/create/{coach}', [SessionController::class, 'create'])->name('sessions.create');

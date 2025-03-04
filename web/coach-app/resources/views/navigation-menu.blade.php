@@ -34,7 +34,7 @@
                         {{ __('My Sessions') }}
                     </x-nav-link>
                     
-                    <x-nav-link href="{{ route('chats') }}" :active="request()->routeIs('chats')">
+                    <x-nav-link href="{{ route('chat.index') }}" :active="request()->routeIs('chat.index')">
                         {{ __('Chats') }}
                     </x-nav-link>
                 </div>
@@ -183,7 +183,7 @@
                 {{ __('My Sessions') }}
             </x-responsive-nav-link>
             
-            <x-responsive-nav-link href="{{ route('chats') }}" :active="request()->routeIs('chats')">
+            <x-responsive-nav-link href="{{ route('chat.index') }}" :active="request()->routeIs('chat.index')">
                 {{ __('Chats') }}
             </x-responsive-nav-link>
             

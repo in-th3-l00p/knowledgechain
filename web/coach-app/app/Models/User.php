@@ -105,4 +105,10 @@ class User extends Authenticatable
     {
         return $this->user_type === 'student';
     }
+
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class, 'conversation_user')
+            ->withTimestamps();
+    }
 }
