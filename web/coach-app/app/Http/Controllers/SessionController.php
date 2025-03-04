@@ -151,4 +151,23 @@ class SessionController extends Controller
         
         return view('sessions.index', compact('upcomingSessions', 'pastSessions'));
     }
+
+    public function destroy(CoachingSession $session)
+    {
+        // Check if the authenticated user owns this session
+        $user = auth()->user();
+        
+        if (($user->isCoach() && $session->coach_id == $user->coachProfile->id) || 
+            $session->student_id == $user->id) {
+            
+            // Cancel the session
+            $session->update(['status' => 'canceled']);
+            
+            return redirect()->route('sessions.index')
+                ->with('success', 'Session canceled successfully.');
+        }
+        
+        return redirect()->route('sessions.index')
+            ->with('error', 'You are not authorized to cancel this session.');
+    }
 } 
