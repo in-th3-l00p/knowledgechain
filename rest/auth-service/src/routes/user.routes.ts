@@ -13,21 +13,21 @@ router.get(
     try {
       const user = await prisma.user.findUnique({
         where: { id: req.user!.id },
-        include: {
-          roles: {
-            include: {
-              role: {
-                include: {
-                  permissions: {
-                    include: {
-                      permission: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
+        // include: {
+        //   roles: {
+        //     include: {
+        //       role: {
+        //         include: {
+        //           permissions: {
+        //             include: {
+        //               permission: true,
+        //             },
+        //           },
+        //         },
+        //       },
+        //     },
+        //   },
+        // },
       });
 
       if (!user) {
@@ -41,10 +41,10 @@ router.get(
         username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
-        roles: user.roles.map(ur => ({
-          name: ur.role.name,
-          permissions: ur.role.permissions.map(rp => rp.permission.name),
-        })),
+        // roles: user.roles.map(ur => ({
+        //   name: ur.role.name,
+        //   permissions: ur.role.permissions.map(rp => rp.permission.name),
+        // })),
       };
 
       res.json(userProfile);

@@ -49,11 +49,6 @@ class ArticleService {
         ...data,
         slug,
       },
-      include: {
-        video: true,
-        tags: true,
-        categories: true,
-      },
     });
 
     logger.info(`Created new article with ID: ${article.id}, title: ${article.title}`);

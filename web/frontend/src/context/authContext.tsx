@@ -6,7 +6,9 @@ import { useAccount, useConnect, useDisconnect } from 'wagmi';
 
 interface User {
     id: string
-    name: string
+    username: string,
+    firstName: string,
+    lastName: string,
     email: string
 }
 

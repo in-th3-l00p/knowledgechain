@@ -6,7 +6,6 @@ import {
   ArrowPathIcon,
   ArrowUpCircleIcon,
   EllipsisHorizontalIcon,
-  PlusSmallIcon,
   BookOpenIcon,
   AcademicCapIcon,
   WalletIcon,
@@ -95,7 +94,6 @@ function classNames(...classes: string[]): string {
 }
 
 export default function Dashboard() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userArticles, setUserArticles] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   
@@ -144,7 +142,6 @@ export default function Dashboard() {
     }
   }, [isAuthenticated, user?.id])
 
-  // Use wagmi hooks to handle wallet connection
   const handleConnectWallet = async () => {
     await connectWallet();
   }
@@ -205,7 +202,6 @@ export default function Dashboard() {
                   href="/dashboard/create-article"
                   className="flex items-center gap-x-1 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                  <PlusSmallIcon aria-hidden="true" className="-ml-1.5 size-5" />
                   New Article
                 </a>
               </div>
@@ -424,7 +420,6 @@ export default function Dashboard() {
                       href="/dashboard/create-article"
                       className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
-                      <PlusSmallIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
                       Create article
                     </a>
                   </div>
