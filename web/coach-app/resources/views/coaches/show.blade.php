@@ -44,7 +44,7 @@
                                 <p class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">${{ number_format($coach->hourly_rate, 2) }}/hour</p>
                                 
                                 <div class="mt-4">
-                                    <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <a href="{{ route('sessions.create', ['coach' => $coach->id]) }}" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                         Book a Session
                                     </a>
                                 </div>

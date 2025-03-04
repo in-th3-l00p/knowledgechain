@@ -30,11 +30,9 @@
                         {{ __('Explore Coaches') }}
                     </x-nav-link>
                     
-                    @if(auth()->user()->isCoach())
-                        <x-nav-link href="{{ route('coach.requests') }}" :active="request()->routeIs('coach.requests')">
-                            {{ __('Coaching Requests') }}
-                        </x-nav-link>
-                    @endif
+                    <x-nav-link href="{{ route('sessions.index') }}" :active="request()->routeIs('sessions.index')">
+                        {{ __('My Sessions') }}
+                    </x-nav-link>
                     
                     <x-nav-link href="{{ route('chats') }}" :active="request()->routeIs('chats')">
                         {{ __('Chats') }}
@@ -181,11 +179,9 @@
                 {{ __('Explore Coaches') }}
             </x-responsive-nav-link>
             
-            @if(auth()->user()->isCoach())
-                <x-responsive-nav-link href="{{ route('coach.requests') }}" :active="request()->routeIs('coach.requests')">
-                    {{ __('Coaching Requests') }}
-                </x-responsive-nav-link>
-            @endif
+            <x-responsive-nav-link href="{{ route('sessions.index') }}" :active="request()->routeIs('sessions.index')">
+                {{ __('My Sessions') }}
+            </x-responsive-nav-link>
             
             <x-responsive-nav-link href="{{ route('chats') }}" :active="request()->routeIs('chats')">
                 {{ __('Chats') }}
