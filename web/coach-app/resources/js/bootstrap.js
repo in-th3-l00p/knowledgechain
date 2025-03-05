@@ -16,12 +16,12 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 import './echo';
 
 window.Echo = new Echo({
-    broadcaster: 'reverb',
+    broadcaster: 'pusher',
     key: import.meta.env.VITE_REVERB_APP_KEY,
     wsHost: import.meta.env.VITE_REVERB_HOST || window.location.hostname,
-    wsPort: import.meta.env.VITE_REVERB_PORT || 8080,
-    wssPort: import.meta.env.VITE_REVERB_PORT || 8080,
+    wsPort: import.meta.env.VITE_REVERB_PORT || 6001,
     forceTLS: false,
     enabledTransports: ['ws', 'wss'],
     disableStats: true,
+    cluster: 'mt1',
 });

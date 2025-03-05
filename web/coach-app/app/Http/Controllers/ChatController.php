@@ -102,4 +102,18 @@ class ChatController extends Controller
         
         return redirect()->route('chat.show', $conversation);
     }
+
+    public function getMessages(Conversation $conversation, Request $request)
+    {
+        $query = $conversation->messages()->with('user')->orderBy('created_at');
+        
+        // If last_id is provided, only get messages newer than that
+        if ($request->has('last_id') && is_numeric($request->last_id)) {
+            $query->where('id', '>', $request->last_id);
+        }
+        
+        $messages = $query->get();
+        
+        return response()->json($messages);
+    }
 } 

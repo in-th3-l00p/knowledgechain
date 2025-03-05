@@ -24,11 +24,19 @@ class NewChatMessage implements ShouldBroadcast
 
     public function broadcastOn(): Channel
     {
-        return new PrivateChannel('conversation.' . $this->message->conversation_id);
+        return new Channel('conversation.' . $this->message->conversation_id);
     }
 
     public function broadcastWith(): array
     {
+        // Make sure the user relation is loaded
+        if (!$this->message->relationLoaded('user')) {
+            $this->message->load('user');
+        }
+        
+        // Add a safe fallback if user is somehow still null
+        $user = $this->message->user ?? null;
+        
         return [
             'id' => $this->message->id,
             'conversation_id' => $this->message->conversation_id,
@@ -36,10 +44,10 @@ class NewChatMessage implements ShouldBroadcast
             'message' => $this->message->message,
             'is_ai' => $this->message->is_ai,
             'created_at' => $this->message->created_at->toDateTimeString(),
-            'user' => [
-                'id' => $this->message->user->id,
-                'name' => $this->message->user->name,
-            ]
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+            ] : null
         ];
     }
 } 

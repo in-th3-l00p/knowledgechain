@@ -48,17 +48,24 @@
             const messageForm = document.getElementById('message-form');
             const messageInput = document.getElementById('message-input');
             const conversationId = {{ $conversation->id }};
+            let lastMessageId = 0;
+            let pollingInterval;
+            const displayedMessageIds = new Set();
             
-            // Scroll to bottom of messages
             function scrollToBottom() {
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
             
-            // Initial scroll
             scrollToBottom();
             
-            // Add new message to the chat
             function addMessage(message, isCurrentUser) {
+                if (displayedMessageIds.has(message.id)) {
+                    console.log('Prevented duplicate message:', message.id);
+                    return;
+                }
+                
+                displayedMessageIds.add(message.id);
+                
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`;
                 
@@ -71,7 +78,6 @@
                 const messageTime = document.createElement('p');
                 messageTime.className = 'text-xs text-gray-500 dark:text-gray-400 text-right mt-1';
                 
-                // Format the time
                 const date = new Date(message.created_at);
                 messageTime.textContent = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
                 
@@ -80,44 +86,143 @@
                 messageDiv.appendChild(messageContent);
                 messagesContainer.appendChild(messageDiv);
                 
+                if (message.id > lastMessageId) {
+                    lastMessageId = message.id;
+                }
+                
                 scrollToBottom();
             }
             
-            // Send message
+            function initializeLastMessageId() {
+                const messages = @json($messages);
+                if (messages && messages.length > 0) {
+                    lastMessageId = Math.max(...messages.map(msg => msg.id));
+                    console.log('Initial last message ID:', lastMessageId);
+                }
+            }
+            
+            function pollNewMessages() {
+                fetch(`/api/conversations/${conversationId}/messages?last_id=${lastMessageId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const currentUserId = {{ Auth::id() }};
+                    
+                    if (data.length > 0) {
+                        console.log('New messages received:', data);
+                        
+                        data.forEach(message => {
+                            const isCurrentUser = message.user_id === currentUserId;
+                            addMessage(message, isCurrentUser);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error polling for messages:', error);
+                });
+            }
+            
+            function startPolling(interval = 500) {
+                stopPolling();
+                pollingInterval = setInterval(pollNewMessages, interval);
+                console.log('Started polling for new messages');
+            }
+            
+            function stopPolling() {
+                if (pollingInterval) {
+                    clearInterval(pollingInterval);
+                    pollingInterval = null;
+                }
+            }
+            
             messageForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const message = messageInput.value.trim();
                 if (!message) return;
                 
+                const sendingDiv = document.createElement('div');
+                sendingDiv.className = 'flex justify-end';
+                sendingDiv.innerHTML = `
+                    <div class="max-w-3/4 px-4 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-800 text-indigo-900 dark:text-indigo-100">
+                        <p>${message}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 text-right mt-1">Sending...</p>
+                    </div>
+                `;
+                messagesContainer.appendChild(sendingDiv);
+                scrollToBottom();
+                
                 try {
+                    const csrfToken = messageForm.querySelector('input[name="_token"]').value;
+                    
                     const response = await fetch(`/chat/${conversationId}/messages`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
                         },
                         body: JSON.stringify({ message }),
                     });
                     
                     if (response.ok) {
                         const data = await response.json();
-                        addMessage(data, true);
+                        console.log('Message sent successfully:', data);
+                        
+                        messagesContainer.removeChild(sendingDiv);
                         messageInput.value = '';
+                    } else {
+                        messagesContainer.removeChild(sendingDiv);
+                        const errorText = await response.text();
+                        console.error('Server error:', response.status, errorText);
+                        
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'flex justify-center';
+                        errorDiv.innerHTML = `
+                            <div class="px-4 py-2 rounded-lg bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100">
+                                <p>Failed to send message. Please try again.</p>
+                            </div>
+                        `;
+                        messagesContainer.appendChild(errorDiv);
+                        scrollToBottom();
                     }
                 } catch (error) {
                     console.error('Error sending message:', error);
+                    messagesContainer.removeChild(sendingDiv);
+                    
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'flex justify-center';
+                    errorDiv.innerHTML = `
+                        <div class="px-4 py-2 rounded-lg bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100">
+                            <p>Network error: ${error.message}</p>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(errorDiv);
+                    scrollToBottom();
                 }
             });
             
-            // Listen for new messages with Laravel Echo
-            window.Echo.private(`conversation.${conversationId}`)
-                .listen('NewChatMessage', (e) => {
-                    const currentUserId = {{ Auth::id() }};
-                    const isCurrentUser = e.message.user_id === currentUserId;
-                    
-                    addMessage(e.message, isCurrentUser);
-                });
+            initializeLastMessageId();
+            startPolling(500);
+            
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    console.log('Tab is visible, starting polling');
+                    startPolling(500);
+                } else {
+                    console.log('Tab is hidden, stopping polling');
+                    stopPolling();
+                }
+            });
         });
     </script>
     @endpush
