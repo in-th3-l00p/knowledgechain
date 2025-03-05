@@ -1,17 +1,3 @@
-<think>The user wants me to translate the KnowledgeChain documentation (README.md) into Romanian. I'll translate the full content while maintaining the markdown formatting, links, and structure.
-
-Here's the translation plan:
-1. Translate the title and main headings
-2. Translate the introduction paragraph
-3. Translate the two application descriptions
-4. Translate the Platform Overview section
-5. Translate the Key Features bullet points
-6. Translate the Getting Started section
-7. Translate the navigation links (keeping the actual links unchanged)
-8. Translate the For Developers section
-
-I'll maintain all markdown formatting including headers (#), bullet points (-), and links.</think># Documentația KnowledgeChain
-
 ## Introducere
 
 KnowledgeChain este o platformă educațională completă concepută pentru a conecta cursanții cu resurse și expertiză prin două aplicații integrate:
