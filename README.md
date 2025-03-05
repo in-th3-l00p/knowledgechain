@@ -1,42 +1,48 @@
-# KnowledgeChain
+<think>The user wants me to translate the KnowledgeChain documentation (README.md) into Romanian. I'll translate the full content while maintaining the markdown formatting, links, and structure.
 
-KnowledgeChain is a web platform designed to empower users to share their knowledge. Whether you're a teacher looking to publish courses, an author wanting to share articles, or a student eager to learn through one-on-one meetings, KnowledgeChain provides the tools and community to make it happen.
+Here's the translation plan:
+1. Translate the title and main headings
+2. Translate the introduction paragraph
+3. Translate the two application descriptions
+4. Translate the Platform Overview section
+5. Translate the Key Features bullet points
+6. Translate the Getting Started section
+7. Translate the navigation links (keeping the actual links unchanged)
+8. Translate the For Developers section
 
-## Features
+I'll maintain all markdown formatting including headers (#), bullet points (-), and links.</think># Documentația KnowledgeChain
 
-- **Course Publishing**: Create and publish courses on a variety of subjects.
-- **Article Sharing**: Write and share articles to educate and inform others.
-- **One-on-One Meetings**: Connect with students or teachers for personalized learning experiences.
-- **Diverse Fields of Study**: Explore a wide range of topics and fields.
+## Introducere
 
-## Getting Started
+KnowledgeChain este o platformă educațională completă concepută pentru a conecta cursanții cu resurse și expertiză prin două aplicații integrate:
 
-To get started with KnowledgeChain, follow these steps:
+1. **Aplicația de Coaching**: O platformă de coaching personalizată care potrivește studenții cu profesorii ideali în funcție de nevoile și obiectivele lor specifice de învățare. Procesul de potrivire este alimentat de un sistem avansat de inteligență artificială bazat pe GPT de la OpenAI, asigurând că studenții primesc cea mai relevantă experiență de coaching individuală.
 
-1. **Clone the Repository**: 
-   ```bash
-   git clone https://github.com/yourusername/knowledgechain.git
-   ```
-2. **Install Dependencies**: 
-   Navigate to the project directory and install the necessary dependencies.
-   ```bash
-   cd knowledgechain
-   npm install
-   ```
-3. **Run the Application**: 
-   Start the development server.
-   ```bash
-   npm start
-   ```
+2. **Platforma de Gestionare a Articolelor**: Un sistem scalabil bazat pe microservicii care permite educatorilor să publice și să-și împărtășească cunoștințele cu un public global. Această platformă gestionează administrarea, distribuția și accesibilitatea conținutului într-un mediu eficient și scalabil.
 
-## Contributing
+## Prezentare Generală a Platformei
 
-We welcome contributions from the community! If you'd like to contribute, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+KnowledgeChain își propune să revoluționeze accesul educațional prin combinarea expertizei umane personalizate cu tehnologia de ultimă generație. Platforma creează un ecosistem fără întreruperi în care cunoștințele circulă liber între educatori și cursanți, atât prin interacțiuni directe de coaching, cât și prin conținut publicat.
 
-## License
+### Caracteristici Principale
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Algoritm de potrivire cu profesori bazat pe inteligență artificială
+- Sesiuni de coaching personalizate unu-la-unu
+- Publicare și gestionare scalabilă a articolelor
+- Arhitectură de microservicii pentru fiabilitate și performanță
+- Ecosistem integrat de cunoștințe care conectează profesori, studenți și conținut
 
-## Contact
+## Primii Pași
 
-For questions or feedback, please contact us at support@knowledgechain.com.
+Această documentație oferă informații complete despre arhitectura, componentele și utilizarea KnowledgeChain. Folosiți meniul de navigare pentru a explora secțiuni specifice de interes.
+
+- [Aplicația de Coaching](./docs/coaching-app/index.md)
+- [Platforma de Gestionare a Articolelor](./docs/article-platform/index.md)
+- [Arhitectura Sistemului](./docs/architecture/index.md)
+- [Documentația API](./docs/api/index.md)
+- [Ghid de Implementare](./docs/deployment/index.md)
+- [Ghiduri pentru Utilizatori](./docs/user-guides/index.md)
+
+## Pentru Dezvoltatori
+
+Dacă sunteți un dezvoltator care dorește să contribuie la KnowledgeChain sau să se integreze cu platforma noastră, vă rugăm să consultați [Ghidul Dezvoltatorului](./developer/index.md) pentru informații tehnice detaliate.
