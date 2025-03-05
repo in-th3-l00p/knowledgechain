@@ -13,6 +13,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    environment:
+      - POSTGRES_ALLOW_EMPTY_PASSWORD=yes
+      - POSTGRES_HOST_AUTH_METHOD=trust
 
   auth-service:
     build:

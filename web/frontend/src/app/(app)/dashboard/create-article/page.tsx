@@ -97,7 +97,7 @@ export default function CreateArticle() {
       // Redirect to the article or my articles page
       router.push(asDraft 
         ? `/dashboard/articles/${articleId}/edit` 
-        : '/dashboard/my-articles'
+        : '/dashboard'
       )
       
     } catch (error: any) {
