@@ -35,15 +35,12 @@ Route::middleware([
         Route::post('/chat/create', [ChatController::class, 'create'])->name('chat.create');
     });
     
-    // Session booking routes
     Route::get('/sessions/create/{coach}', [SessionController::class, 'create'])->name('sessions.create');
     Route::post('/sessions', [SessionController::class, 'store'])->name('sessions.store');
     Route::get('/sessions', [SessionController::class, 'index'])->name('sessions.index');
     Route::delete('/sessions/{session}', [SessionController::class, 'destroy'])->name('sessions.destroy');
     
-    // Coach-specific routes
     Route::middleware(['auth:sanctum', 'verified', 'coach'])->prefix('coach')->name('coach.')->group(function () {
-        // Availability routes
         Route::get('/availability', [AvailabilityController::class, 'index'])->name('availability.index');
         Route::post('/availability', [AvailabilityController::class, 'store'])->name('availability.store');
         Route::delete('/availability/{availability}', [AvailabilityController::class, 'destroy'])->name('availability.destroy');
